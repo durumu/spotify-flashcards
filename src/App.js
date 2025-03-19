@@ -7,8 +7,7 @@ import FlashCard from './components/FlashCard';
 import PlaylistSelector from './components/PlaylistSelector';
 
 function App() {
-  const [token, setToken] = useState('');
-  const [playlists, setPlaylists] = useState([]);
+  const [token, setToken] = useState(''); const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -159,10 +158,10 @@ function App() {
       const trackData = await trackResponse.json();
       const durationMs = trackData.duration_ms;
 
-      const playLengthMs = 15000;
+      const minPlayLengthMs = 30000;
 
       // Play from the middle of the song for a few seconds
-      const startPositionMs = Math.max(0, Math.floor(durationMs / 2) - playLengthMs);
+      const startPositionMs = Math.max(0, Math.floor(durationMs / 2) - minPlayLengthMs);
 
       // Get user's available devices
       const devicesResponse = await fetch('https://api.spotify.com/v1/me/player/devices', {
@@ -190,14 +189,6 @@ function App() {
         });
 
         setIsPlaying(true);
-
-        // Stop after playing for the duration
-        setTimeout(() => {
-          if (player) {
-            player.pause();
-            setIsPlaying(false);
-          }
-        }, playLengthMs);
       } else {
         console.error('Web player device not found');
       }
