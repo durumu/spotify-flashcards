@@ -159,8 +159,10 @@ function App() {
       const trackData = await trackResponse.json();
       const durationMs = trackData.duration_ms;
 
+      const playLengthMs = 15000;
+
       // Play from the middle of the song for a few seconds
-      const startPositionMs = Math.max(0, Math.floor(durationMs / 2) - 5000);
+      const startPositionMs = Math.max(0, Math.floor(durationMs / 2) - playLengthMs);
 
       // Get user's available devices
       const devicesResponse = await fetch('https://api.spotify.com/v1/me/player/devices', {
@@ -189,13 +191,13 @@ function App() {
 
         setIsPlaying(true);
 
-        // Stop after playing for 5 seconds
+        // Stop after playing for the duration
         setTimeout(() => {
           if (player) {
             player.pause();
             setIsPlaying(false);
           }
-        }, 5000);
+        }, playLengthMs);
       } else {
         console.error('Web player device not found');
       }
