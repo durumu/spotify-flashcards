@@ -27,7 +27,7 @@ function App() {
         }
         return initial;
       }, {});
-    
+
     if (hash.access_token) {
       setToken(hash.access_token);
       window.location.hash = '';
@@ -60,14 +60,14 @@ function App() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (response.status === 401) {
         // Token expired
         window.localStorage.removeItem('spotify_token');
         setToken('');
         return;
       }
-      
+
       const data = await response.json();
       setPlaylists(data.items);
     } catch (error) {
@@ -82,18 +82,18 @@ function App() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       const data = await response.json();
       // Filter out any items with null track (can happen with podcasts, etc.)
       const validTracks = data.items.filter(item => item.track);
-      
+
       // Shuffle the tracks
       const shuffledTracks = validTracks
         .sort(() => Math.random() - 0.5);
-      
+
       setTracks(shuffledTracks);
       setCurrentTrackIndex(0);
-      
+
       if (player) {
         player.pause();
         setIsPlaying(false);
@@ -145,9 +145,9 @@ function App() {
 
   const playCurrentTrack = async () => {
     if (!tracks.length || currentTrackIndex >= tracks.length) return;
-    
+
     const currentTrack = tracks[currentTrackIndex].track;
-    
+
     try {
       // Get track details to find total duration
       const trackResponse = await fetch(`https://api.spotify.com/v1/tracks/${currentTrack.id}`, {
@@ -155,24 +155,24 @@ function App() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       const trackData = await trackResponse.json();
       const durationMs = trackData.duration_ms;
-      
+
       // Play from the middle of the song for a few seconds
       const startPositionMs = Math.max(0, Math.floor(durationMs / 2) - 5000);
-      
+
       // Get user's available devices
       const devicesResponse = await fetch('https://api.spotify.com/v1/me/player/devices', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       const devicesData = await devicesResponse.json();
-      const webPlayerDevice = devicesData.devices.find(device => 
+      const webPlayerDevice = devicesData.devices.find(device =>
         device.name === 'Music Trivia Flash Cards');
-      
+
       if (webPlayerDevice) {
         // Play on our Web Playback SDK instance
         await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${webPlayerDevice.id}`, {
@@ -186,9 +186,9 @@ function App() {
             position_ms: startPositionMs
           })
         });
-        
+
         setIsPlaying(true);
-        
+
         // Stop after playing for 5 seconds
         setTimeout(() => {
           if (player) {
@@ -230,21 +230,21 @@ function App() {
           <button className="logout-button" onClick={logout}>Logout</button>
         ) : null}
       </header>
-      
+
       {!token ? (
         <Login />
       ) : (
         <div className="container">
           {!selectedPlaylist ? (
-            <PlaylistSelector 
-              playlists={playlists} 
-              onSelectPlaylist={setSelectedPlaylist} 
+            <PlaylistSelector
+              playlists={playlists}
+              onSelectPlaylist={setSelectedPlaylist}
             />
           ) : (
             <div className="game-area">
               <h2>Flash Cards from: {selectedPlaylist.name}</h2>
               {tracks.length > 0 && currentTrackIndex < tracks.length ? (
-                <FlashCard 
+                <FlashCard
                   track={tracks[currentTrackIndex].track}
                   isPlaying={isPlaying}
                   onPlay={playCurrentTrack}
@@ -253,7 +253,7 @@ function App() {
               ) : (
                 <div className="loading">Loading tracks...</div>
               )}
-              <button 
+              <button
                 className="back-button"
                 onClick={() => setSelectedPlaylist(null)}
               >
