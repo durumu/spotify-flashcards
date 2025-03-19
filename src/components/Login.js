@@ -9,6 +9,7 @@ const Login = () => {
     'playlist-read-private',
     'playlist-read-collaborative',
     'streaming',
+    'user-read-playback-state',
     'user-modify-playback-state'
   ];
 
@@ -18,7 +19,7 @@ const Login = () => {
     )}&scope=${encodeURIComponent(
       scopes.join(' ')
     )}&response_type=token&show_dialog=true`;
-    
+
     window.location.href = authUrl;
   };
 
