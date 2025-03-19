@@ -207,13 +207,21 @@ function App() {
   };
 
   const nextTrack = () => {
-    if (currentTrackIndex < tracks.length - 1) {
-      setCurrentTrackIndex(prev => prev + 1);
-      setIsPlaying(false);
-    } else {
-      // Reached the end of the playlist
-      alert('You have completed all flash cards in this playlist!');
+    // First, stop the current playback completely
+    if (player && isPlaying) {
+      player.pause();
+
+      // Reset the Spotify playback state completely
+      fetch('https://api.spotify.com/v1/me/player/pause', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }).catch(error => console.error('Error stopping playback:', error));
     }
+
+    setCurrentTrackIndex(prev => (prev + 1) % tracks.length);
+    setIsPlaying(false);
   };
 
   const logout = () => {
