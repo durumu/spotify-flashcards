@@ -53,28 +53,54 @@ const FlashCard = ({ track, isPlaying, onPlay, onNext }) => {
     };
   }, [revealed, isPlaying, onPlay, onNext]); // Dependencies for useEffect
 
+  // Handle click on the card
+  const handleCardClick = () => {
+    // Follow the same logic as spacebar
+    if (revealed) {
+      // Card is revealed, go to next
+      handleNext();
+    } else if (!isPlaying) {
+      // Card is not revealed and no song is playing, play clip
+      onPlay();
+    } else {
+      // Song is playing but card is not revealed, reveal card
+      handleReveal();
+    }
+  };
+
   return (
     <div className={`flash-card ${revealed ? 'revealed' : ''}`}>
-      <div className="card-front">
+      <div className="card-front" onClick={handleCardClick}>
         <div className="card-question">
           <h3>What song is this?</h3>
-          <button
-            className={`play-button ${isPlaying ? 'playing' : ''}`}
-            onClick={onPlay}
-            disabled={isPlaying}
-          >
-            {isPlaying ? 'Playing...' : 'Play Clip'}
-          </button>
-          <button
-            className="reveal-button"
-            onClick={handleReveal}
-          >
-            Reveal
-          </button>
+          <div className="card-actions">
+            <button
+              className={`play-button ${isPlaying ? 'playing' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent triggering card click
+                onPlay();
+              }}
+              disabled={isPlaying}
+            >
+              {isPlaying ? 'Playing...' : 'Play Clip'}
+            </button>
+            <button
+              className="reveal-button"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent triggering card click
+                handleReveal();
+              }}
+            >
+              Reveal
+            </button>
+          </div>
+          <div className="card-hint">
+            <p>Click anywhere on card or press spacebar</p>
+          </div>
         </div>
       </div>
 
-      <div className="card-back">
+      <div className="card-back" onClick={handleCardClick}>
         <div className="track-info">
           {track.album.images && track.album.images.length > 0 && (
             <img
@@ -91,10 +117,16 @@ const FlashCard = ({ track, isPlaying, onPlay, onNext }) => {
         </div>
         <button
           className="next-button"
-          onClick={handleNext}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent triggering card click
+            handleNext();
+          }}
         >
           Next Song
         </button>
+        <div className="card-hint">
+          <p>Click anywhere or press spacebar for next song</p>
+        </div>
       </div>
     </div>
   );
